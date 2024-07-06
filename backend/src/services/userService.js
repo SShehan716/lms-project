@@ -1,16 +1,28 @@
-const { registerUser, loginUser, getUserByEmail } = require('../services/userService');
+const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 //register a new yser
-exports.registerUser = async (req, res) => {
+exports.registerUser = async ({name, email, password, role}) => {
     try{
-        const user = await registerUser(req.body);
-        if(user){
-            res.status(201).json({ message: 'User registered successfully'});
-        }else{
-            res.status(400).json({ message: 'User registration failed'});
+        const userExists = await User.findOne({email});
+
+        if(userExists){
+            throw new Error('User already exists');
         }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const newUser = new User({
+            name,
+            email,
+            password: hashedPassword,
+            role,
+        });
+
+        await newUser.save();
+        return newUser;
     }catch(error){
-        res.status(400).json({ message: error.message });
+        console.error(error);
     }
 }
 
