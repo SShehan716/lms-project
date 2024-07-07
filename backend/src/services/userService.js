@@ -22,48 +22,43 @@ exports.registerUser = async ({name, email, password, role}) => {
         await newUser.save();
         return newUser;
     }catch(error){
-        console.error(error);
+        return { message: error.message };
     }
 }
 
-
 //login a user
-exports.loginUser = async (req, res) => {
+exports.loginUser = async ({email, password}) => {
     try{
-        const {email, password} = req.body;
-
         const userExists = await User.findOne({email});
 
         if(!userExists){
-            return res.status(400).json({message: 'Invalid Email'});
+            throw Error('Invalid Email');
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, userExists.password);
 
         if(!isPasswordCorrect){
-            return res.status(400).json({message: 'Invalid Password'});
+            throw Error('Invalid Password');
         }
 
         const token = jwt.sign({userId: userExists._id, name: userExists.name, role: userExists.role, email: userExists.email}, process.env.JWT_SECRET, {expiresIn: '1h'});
 
-        res.status(200).json({ token, user: { id: userExists._id, name: userExists.name, email: userExists.email, role: userExists.role } });
+        return { token, user: { id: userExists._id, name: userExists.name, email: userExists.email, role: userExists.role } };
 
     }catch(error){
-        console.error(error);
-        res.status(500).json({message: 'Server Error'});
+        return { message: error.message };
     }
 }
 
 // get user by Email
-exports.getUserByEmail = async (req, res) => {
+exports.getUserByEmail = async (email) => {
     try{
-        const user = await User.findOne({email: req.params.email}).select('-password');
+        const user = await User.findOne({email}).select('-password');
         if(!user){
-            return res.status(404).json({message: 'User Not Found'});
+            throw Error('User not found');
         }
-        res.status(200).json(user);
+        return user;
     }catch(error){
-        console.error(error);
-        res.status(500).json({message: 'Server Error'});
+        return { message: error.message };
     }
 }

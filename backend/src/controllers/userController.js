@@ -18,26 +18,13 @@ exports.registerUser = async (req, res) => {
 //login a user
 exports.loginUser = async (req, res) => {
     try{
-        const {email, password} = req.body;
-
-        const userExists = await User.findOne({email});
-
-        if(!userExists){
-            return res.status(400).json({message: 'Invalid Email'});
+        const user = await loginUser(req.body);
+        if(user){
+            res.status(200).json(user);
+        }else{
+            res.status(400).json({ message: 'User login failed'});
         }
-
-        const isPasswordCorrect = await bcrypt.compare(password, userExists.password);
-
-        if(!isPasswordCorrect){
-            return res.status(400).json({message: 'Invalid Password'});
-        }
-
-        const token = jwt.sign({userId: userExists._id, name: userExists.name, role: userExists.role, email: userExists.email}, process.env.JWT_SECRET, {expiresIn: '1h'});
-
-        res.status(200).json({ token, user: { id: userExists._id, name: userExists.name, email: userExists.email, role: userExists.role } });
-
     }catch(error){
-        console.error(error);
         res.status(500).json({message: 'Server Error'});
     }
 }
@@ -45,13 +32,13 @@ exports.loginUser = async (req, res) => {
 // get user by Email
 exports.getUserByEmail = async (req, res) => {
     try{
-        const user = await User.findOne({email: req.params.email}).select('-password');
-        if(!user){
-            return res.status(404).json({message: 'User Not Found'});
+        const user = await getUserByEmail(req.params.email);
+        if(user){
+            res.status(200).json(user);
+        }else{
+            res.status(404).json({message: 'User Not Found'});
         }
-        res.status(200).json(user);
     }catch(error){
-        console.error(error);
         res.status(500).json({message: 'Server Error'});
     }
 }
