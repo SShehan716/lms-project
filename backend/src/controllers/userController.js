@@ -1,4 +1,4 @@
-const { registerUser, loginUser, getUserByEmail } = require('../services/userService');
+const { registerUser, loginUser, getUserByEmail, verifyUserByLink} = require('../services/userService');
 
 //register a new yser
 exports.registerUser = async (req, res) => {
@@ -14,6 +14,22 @@ exports.registerUser = async (req, res) => {
     }
 }
 
+// Verify email
+exports.verifyUserByLink = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const user = await verifyUserByLink(token);
+
+        if (user.message) {
+            return res.status(400).json({ message: user.message });
+        }
+
+        res.status(200).json({ message: 'User Verified Successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
 
 //login a user
 exports.loginUser = async (req, res) => {

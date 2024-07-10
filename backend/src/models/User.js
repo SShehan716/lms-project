@@ -20,6 +20,13 @@ const userSchema = new Schema({
         enum: ['student', 'teacher', 'admin'],
         default: 'student',
     },
+    verificationToken: {
+        type: String,
+    },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 module.exports = mongoose.model('User', userSchema);

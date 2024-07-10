@@ -1,27 +1,58 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const { sendVerificationEmail } = require('../utils/emailService');
 
 //register a new yser
 exports.registerUser = async ({name, email, password, role}) => {
     try{
         const userExists = await User.findOne({email});
 
-        if(userExists){
+        if(userExists && userExists.isVerified){
             throw new Error('User already exists');
+        }else if(userExists && !userExists.isVerified){
+            throw new Error('User already exists but not verified');
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
+        const verificationToken = crypto.randomBytes(32).toString('hex');
         const newUser = new User({
             name,
             email,
             password: hashedPassword,
             role,
+            verificationToken,
+            isVerified: false
         });
 
         await newUser.save();
+
+        const verificationUrl = `${process.env.CLIENT_URL}/verify/${newUser.verificationToken}`;
+
+        sendVerificationEmail(email, verificationUrl);
+
         return newUser;
     }catch(error){
+        return { message: error.message };
+    }
+}
+
+//verify a user by link
+exports.verifyUserByLink = async (token) => {
+    try {
+        const user = await User.findOneAndUpdate(
+            { verificationToken: token },
+            { isVerified: true, verificationToken: null }, // Clear the token after verification
+            { new: true }
+        );
+
+        if (!user) {
+            throw new Error('Invalid verification token');
+        }
+
+        return user;
+    } catch (error) {
         return { message: error.message };
     }
 }
