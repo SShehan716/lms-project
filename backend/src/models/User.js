@@ -20,12 +20,8 @@ const userSchema = new Schema({
         enum: ['student', 'teacher', 'admin'],
         default: 'student',
     },
-    verificationToken: {
-        type: String,
-    },
-    isVerified: {
-        type: Boolean,
-        default: false,
+    emailVerifiedAt: {
+        type: Date,
     },
 });
 

@@ -1,10 +1,11 @@
 const User = require('../models/User');
+const VerificationToken = require('../models/VerificationToken');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendVerificationEmail } = require('../utils/emailService');
 
-//register a new yser
+//register a new user
 exports.registerUser = async ({name, email, password, role}) => {
     try{
         const userExists = await User.findOne({email});
@@ -16,19 +17,24 @@ exports.registerUser = async ({name, email, password, role}) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        const verificationToken = crypto.randomBytes(32).toString('hex');
         const newUser = new User({
             name,
             email,
             password: hashedPassword,
             role,
-            verificationToken,
             isVerified: false
         });
 
-        await newUser.save();
+        const savedUser = await newUser.save();
 
-        const verificationUrl = `${process.env.CLIENT_URL}/verify/${newUser.verificationToken}`;
+        const verificationToken = new VerificationToken({
+            userId: savedUser._id,
+            token: crypto.randomBytes(16).toString('hex')
+        })
+
+        await verificationToken.save();
+
+        const verificationUrl = `${process.env.CLIENT_URL}/verify/${verificationToken.token}`;
 
         sendVerificationEmail(email, verificationUrl);
 
@@ -41,15 +47,22 @@ exports.registerUser = async ({name, email, password, role}) => {
 //verify a user by link
 exports.verifyUserByLink = async (token) => {
     try {
-        const user = await User.findOneAndUpdate(
-            { verificationToken: token },
-            { isVerified: true, verificationToken: null }, // Clear the token after verification
-            { new: true }
-        );
+
+        const verificationToken = await VerificationToken.findOne({ token });
+
+        if (!verificationToken) {
+            throw new Error('Invalid verification token');
+        }else if(verificationToken.expiresAt < Date.now()){
+            throw new Error('Verification token expired');
+        }
+
+        const user = await User.findByIdAndUpdate(verificationToken.userId, { emailVerifiedAt: Date.now() });
 
         if (!user) {
-            throw new Error('Invalid verification token');
+            throw new Error('User not found');
         }
+
+        await VerificationToken.deleteOne({ token });
 
         return user;
     } catch (error) {
