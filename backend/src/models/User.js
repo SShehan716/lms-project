@@ -20,6 +20,9 @@ const userSchema = new Schema({
         enum: ['student', 'teacher', 'admin'],
         default: 'student',
     },
+    emailVerifiedAt: {
+        type: Date,
+    },
 });
 
 module.exports = mongoose.model('User', userSchema);
