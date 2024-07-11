@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const verificationTokenSchema = new Schema({
-    userId: {
-        type: Schema.Types.ObjectId,
+    userEmail: {
+        type: String,
         required: true,
-        ref: 'User',
+        unique: true,        
     },
     token: {
         type: String,

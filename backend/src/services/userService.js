@@ -28,8 +28,8 @@ exports.registerUser = async ({name, email, password, role}) => {
         const savedUser = await newUser.save();
 
         const verificationToken = new VerificationToken({
-            userId: savedUser._id,
-            token: crypto.randomBytes(16).toString('hex')
+            userEmail: savedUser.email,
+            token: crypto.randomBytes(32).toString('hex')
         })
 
         await verificationToken.save();
@@ -53,10 +53,12 @@ exports.verifyUserByLink = async (token) => {
         if (!verificationToken) {
             throw new Error('Invalid verification token');
         }else if(verificationToken.expiresAt < Date.now()){
-            throw new Error('Verification token expired');
+            console.log(verificationToken.userEmail);
+            this.requestVerificationEmail(VerificationToken.userEmail)
+            throw new Error('Verification token expired & sent again');
         }
 
-        const user = await User.findByIdAndUpdate(verificationToken.userId, { emailVerifiedAt: Date.now() });
+        const user = await User.findOneAndUpdate({ email: verificationToken.userEmail }, { emailVerifiedAt: Date.now() });
 
         if (!user) {
             throw new Error('User not found');
@@ -77,6 +79,8 @@ exports.loginUser = async ({email, password}) => {
 
         if(!userExists){
             throw Error('Invalid Email');
+        } else if(userExists && !userExists.emailVerifiedAt){
+            throw Error('User not verified');
         }
 
         const isPasswordCorrect = await bcrypt.compare(password, userExists.password);
@@ -102,6 +106,48 @@ exports.getUserByEmail = async (email) => {
             throw Error('User not found');
         }
         return user;
+    }catch(error){
+        return { message: error.message };
+    }
+}
+
+// request verification email again
+exports.requestVerificationEmail = async (email) => {
+    try{
+        console.log(email);
+        const user = await User.findOne({email});
+
+        if(!user){
+            throw Error('User not found');
+        }else if(user && user.emailVerifiedAt){
+            throw Error('User already verified');
+        }
+
+        const verificationToken = await VerificationToken.findOne({ userEmail: email});
+
+        if(verificationToken && verificationToken.expiresAt > Date.now()){
+            const verificationUrl = `${process.env.CLIENT_URL}/verify/${verificationToken.token}`;
+            sendVerificationEmail(email, verificationUrl);
+        }else if(verificationToken && verificationToken.expiresAt < Date.now()){
+            const newVerificationToken = crypto.randomBytes(32).toString('hex')
+            await VerificationToken.updateOne({ userEmail: email }, { token: newVerificationToken, expiresAt: Date.now() + 3600000 });
+
+            const verificationUrl = `${process.env.CLIENT_URL}/verify/${newVerificationToken.token}`;
+            sendVerificationEmail(email, verificationUrl);
+        }else if(!verificationToken){
+            const newVerificationToken = new VerificationToken({
+                userEmail: email,
+                token: crypto.randomBytes(32).toString('hex')
+            });
+
+            await newVerificationToken.save();
+
+            const verificationUrl = `${process.env.CLIENT_URL}/verify/${newVerificationToken.token}`;
+            sendVerificationEmail(email, verificationUrl);
+        }
+
+        return user;
+
     }catch(error){
         return { message: error.message };
     }
