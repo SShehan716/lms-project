@@ -53,8 +53,7 @@ exports.verifyUserByLink = async (token) => {
         if (!verificationToken) {
             throw new Error('Invalid verification token');
         }else if(verificationToken.expiresAt < Date.now()){
-            console.log(verificationToken.userEmail);
-            this.requestVerificationEmail(VerificationToken.userEmail)
+            this.requestVerificationEmail(verificationToken.userEmail)
             throw new Error('Verification token expired & sent again');
         }
 
@@ -114,7 +113,6 @@ exports.getUserByEmail = async (email) => {
 // request verification email again
 exports.requestVerificationEmail = async (email) => {
     try{
-        console.log(email);
         const user = await User.findOne({email});
 
         if(!user){
