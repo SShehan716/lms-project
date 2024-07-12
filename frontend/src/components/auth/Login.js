@@ -1,17 +1,23 @@
 import React, { useState } from "react";
-import api from "../../services/api";
+import useAuth from "../../hooks/useAuth";
+import { login as loginUser} from "../../services/authService";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            await api.post('api/users/login', { email, password });
-        } catch (error) {
-            console.error(error);
+        const response = await loginUser(email, password);
+
+        if (response.error) {
+            console.error(response.message);
+            alert(response.message);
+        }else{
+            console.log(response);
+            login(response);
         }
     }
 
