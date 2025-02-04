@@ -5,9 +5,9 @@ exports.registerUser = async (req, res) => {
     try{
         const user = await registerUser(req.body);
         if(user){
-            res.status(201).json({ message: 'User registered successfully'});
+            res.status(201).json({ message: 'User invited successfully'});
         }else{
-            res.status(400).json({ message: 'User registration failed'});
+            res.status(400).json({ message: 'User invite failed'});
         }
     }catch(error){
         res.status(400).json({ message: error.message });
