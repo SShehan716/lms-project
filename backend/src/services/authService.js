@@ -71,31 +71,32 @@ exports.verifyUserByLink = async (token) => {
     }
 }
 
-//login a user
-exports.loginUser = async ({email, password}) => {
-    try{
-        const userExists = await User.findOne({email});
+// login a user
+exports.loginUser = async ({ email, password }) => {
+    const userExists = await User.findOne({ email });
 
-        if(!userExists){
-            throw Error('Invalid Email');
-        } else if(userExists && !userExists.emailVerifiedAt){
-            throw Error('User not verified');
-        }
-
-        const isPasswordCorrect = await bcrypt.compare(password, userExists.password);
-
-        if(!isPasswordCorrect){
-            throw Error('Invalid Password');
-        }
-
-        const token = jwt.sign({userId: userExists._id, name: userExists.name, role: userExists.role, email: userExists.email}, process.env.JWT_SECRET, {expiresIn: '1h'});
-
-        return { token, user: { id: userExists._id, name: userExists.name, email: userExists.email, role: userExists.role } };
-
-    }catch(error){
-        return { message: error.message };
+    if (!userExists) {
+        throw new Error('Invalid Email'); // Throw error if the email is invalid
     }
-}
+
+    if (userExists && !userExists.emailVerifiedAt) {
+        throw new Error('User not verified'); // Throw error if the user is not verified
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(password, userExists.password);
+
+    if (!isPasswordCorrect) {
+        throw new Error('Invalid Password'); // Throw error if the password is invalid
+    }
+
+    const token = jwt.sign(
+        { userId: userExists._id, name: userExists.name, role: userExists.role, email: userExists.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+    );
+
+    return { token, user: { id: userExists._id, name: userExists.name, email: userExists.email, role: userExists.role } };
+};
 
 // request verification email again
 exports.requestVerificationEmail = async (email) => {
