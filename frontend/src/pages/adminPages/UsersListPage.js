@@ -43,6 +43,24 @@ const UserListPage = () => {
       email: `newuser${users.length + 1}@example.com`,
       role: "student",
     };
+    if (newUser.role === "student") {
+      newUser = {
+        ...newUser,
+        code_module: "",
+        code_presentation: "",
+        date_registration: "",
+        date_unregistration: "",
+        gender: "",
+        imd_band: "",
+        highest_education: "",
+        age_band: "",
+        num_of_prev_attempts: 0,
+        studied_credits: 0,
+        region: "",
+        disability: "",
+        final_result: "",
+      };
+    }
     setUsers([...users, newUser]);
   };
 

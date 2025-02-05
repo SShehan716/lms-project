@@ -1,14 +1,18 @@
 const User = require('../models/User');
 const VerificationToken = require('../models/VerificationToken');
+const StudentInfo = require('../models/StudentInfo');
+const StudentRegistration = require('../models/StudentRegistration');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendVerificationEmail } = require('../utils/emailService');
 
 //register a new user
-exports.registerUser = async ({ name, email, password, role }) => {
+exports.registerUser = async (data) => {
+  console.log(data);
     // Check if the user exists
-    const userExists = await User.findOne({ email });
+    const email = data.email;
+    const userExists = await User.findOne({email});
     if (userExists && userExists.isVerified) {
       throw new Error('User already exists');
     } else if (userExists && !userExists.isVerified) {
@@ -16,14 +20,14 @@ exports.registerUser = async ({ name, email, password, role }) => {
     }
   
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    const hashedPassword = await bcrypt.hash(data.password, 12);
   
     // Create a new user (with isVerified set to false)
     const newUser = new User({
-      name,
-      email,
+      name: data.name,
+      email: data.email,
       password: hashedPassword,
-      role,
+      role: data.role || 'student',
       isVerified: false,
     });
   
@@ -40,7 +44,45 @@ exports.registerUser = async ({ name, email, password, role }) => {
     const verificationUrl = `${process.env.CLIENT_URL}/verify/${verificationToken.token}`;
     sendVerificationEmail(email, verificationUrl);
   
-    return savedUser;
+    let studentInfoDoc = null;
+    let studentRegDoc = null;
+
+    // 2. If the user is a 'student', create StudentInfo and StudentRegistration docs
+    if (newUser.role === 'student') {
+      // 2a. Create StudentInfo (demographics, etc.) if you have that data
+      studentInfoDoc = new StudentInfo({
+        code_module: data.code_module,
+        code_presentation: data.code_presentation,
+        user: newUser._id,
+        gender: data.gender,
+        imd_band: data.imd_band,
+        highest_education: data.highest_education,
+        age_band: data.age_band,
+        num_of_prev_attempts: data.num_of_prev_attempts,
+        studied_credits: data.studied_credits,
+        region: data.region,
+        disability: data.disability,
+        final_result: data.final_result,
+      });
+      await studentInfoDoc.save();
+
+      // 2b. Create StudentRegistration (if you want to track registration dates)
+      studentRegDoc = new StudentRegistration({
+        code_module: data.code_module,
+        code_presentation: data.code_presentation,
+        user: newUser._id,
+        date_registration: new Date(data.date_registration),
+        date_unregistration: new Date(data.date_unregistration),    
+      });
+      await studentRegDoc.save();
+    }
+
+    return {
+      success: true,
+      user: newUser,
+      studentInfo: studentInfoDoc,
+      studentRegistration: studentRegDoc,
+    };
   };
   
 
