@@ -1,7 +1,5 @@
 import React from 'react';
-import { Card, Descriptions, Typography } from 'antd';
-
-const { Title } = Typography;
+import { Card, Descriptions } from 'antd';
 
 const ProfileInfo = ({ user }) => {
     return (
