@@ -1,10 +1,9 @@
 import React from 'react';
-import Login from '../components/auth/Login';
 
 const DashboardPage = () => {
     return (
         <div>
-            <h1> Dashboard</h1>
+            <h1> Student Dashboard</h1>
         </div>
     );
 };

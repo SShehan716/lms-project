@@ -1,9 +1,9 @@
 import React from 'react';
 import { Layout, Typography } from 'antd';
-import ProfileInfo from '../components/profile/ProfileInfo';
-import ProfileActions from '../components/profile/ProfileActions';
-import ProfileCourses from '../components/profile/ProfileCourses';
-import ProfileAdminPanel from '../components/profile/ProfileAdminPanel';
+import ProfileInfo from '../../components/profile/ProfileInfo';
+import ProfileActions from '../../components/profile/ProfileActions';
+import ProfileCourses from '../../components/profile/ProfileCourses';
+import ProfileAdminPanel from '../../components/profile/ProfileAdminPanel';
 
 const { Content } = Layout;
 const { Title } = Typography;

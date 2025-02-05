@@ -6,70 +6,68 @@ const crypto = require('crypto');
 const { sendVerificationEmail } = require('../utils/emailService');
 
 //register a new user
-exports.registerUser = async ({name, email, password, role}) => {
-    try{
-        const userExists = await User.findOne({email});
-
-        if(userExists && userExists.isVerified){
-            throw new Error('User already exists');
-        }else if(userExists && !userExists.isVerified){
-            throw new Error('User already exists but not verified');
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 12);
-        const newUser = new User({
-            name,
-            email,
-            password: hashedPassword,
-            role,
-            isVerified: false
-        });
-
-        const savedUser = await newUser.save();
-
-        const verificationToken = new VerificationToken({
-            userEmail: savedUser.email,
-            token: crypto.randomBytes(32).toString('hex')
-        })
-
-        await verificationToken.save();
-
-        const verificationUrl = `${process.env.CLIENT_URL}/verify/${verificationToken.token}`;
-
-        sendVerificationEmail(email, verificationUrl);
-
-        return newUser;
-    }catch(error){
-        return { message: error.message };
+exports.registerUser = async ({ name, email, password, role }) => {
+    // Check if the user exists
+    const userExists = await User.findOne({ email });
+    if (userExists && userExists.isVerified) {
+      throw new Error('User already exists');
+    } else if (userExists && !userExists.isVerified) {
+      throw new Error('User already exists but not verified');
     }
-}
+  
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 12);
+  
+    // Create a new user (with isVerified set to false)
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      isVerified: false,
+    });
+  
+    const savedUser = await newUser.save();
+  
+    // Create a verification token
+    const verificationToken = new VerificationToken({
+      userEmail: savedUser.email,
+      token: crypto.randomBytes(32).toString('hex'),
+    });
+    await verificationToken.save();
+  
+    // Construct verification URL and send the verification email
+    const verificationUrl = `${process.env.CLIENT_URL}/verify/${verificationToken.token}`;
+    sendVerificationEmail(email, verificationUrl);
+  
+    return savedUser;
+  };
+  
 
 //verify a user by link
 exports.verifyUserByLink = async (token) => {
     try {
-
-        const verificationToken = await VerificationToken.findOne({ token });
-
-        if (!verificationToken) {
-            throw new Error('Invalid verification token');
-        }else if(verificationToken.expiresAt < Date.now()){
-            this.requestVerificationEmail(verificationToken.userEmail)
-            throw new Error('Verification token expired & sent again');
-        }
-
-        const user = await User.findOneAndUpdate({ email: verificationToken.userEmail }, { emailVerifiedAt: Date.now() });
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        await VerificationToken.deleteOne({ token });
-
-        return user;
+      const verificationToken = await VerificationToken.findOne({ token });
+      if (!verificationToken) {
+        throw new Error('Invalid verification token');
+      }
+      if (verificationToken.expiresAt < Date.now()) {
+        await exports.requestVerificationEmail(verificationToken.userEmail);
+        throw new Error('Verification token expired & sent again');
+      }
+      const user = await User.findOneAndUpdate(
+        { email: verificationToken.userEmail },
+        { emailVerifiedAt: Date.now() }
+      );
+      if (!user) {
+        throw new Error('User not found');
+      }
+      await VerificationToken.deleteOne({ token });
+      return { success: true, user };
     } catch (error) {
-        return { message: error.message };
+      return { success: false, message: error.message };
     }
-}
+  };
 
 // login a user
 exports.loginUser = async ({ email, password }) => {

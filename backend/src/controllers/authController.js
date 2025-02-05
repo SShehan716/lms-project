@@ -2,34 +2,34 @@ const { registerUser, loginUser, verifyUserByLink, requestVerificationEmail} = r
 
 //register a new yser
 exports.registerUser = async (req, res) => {
-    try{
-        const user = await registerUser(req.body);
-        if(user){
-            res.status(201).json({ message: 'User registered successfully'});
-        }else{
-            res.status(400).json({ message: 'User registration failed'});
-        }
-    }catch(error){
-        res.status(400).json({ message: error.message });
+    try {
+      // Call the service function with request body
+      await registerUser(req.body);
+      // On success, send a response with a "message" key.
+      return res.status(201).json({ message: "User invited successfully" });
+    } catch (error) {
+      // If the error message indicates a conflict (user exists or is not verified),
+      // return a 409 response with an "error" key.
+      if (
+        error.message.includes("already exists") ||
+        error.message.includes("not verified")
+      ) {
+        return res.status(409).json({ error: error.message });
+      }
+      // For all other errors, return a 400 response with an "error" key.
+      return res.status(400).json({ error: error.message });
     }
-}
+  };
 
 // Verify email
 exports.verifyUserByLink = async (req, res) => {
-    try {
-        const { token } = req.params;
-        const user = await verifyUserByLink(token);
-
-        if (user.message) {
-            return res.status(400).json({ message: user.message });
-        }
-
-        res.status(200).json({ message: 'User Verified Successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server Error' });
+    const { token } = req.params;
+    const result = await verifyUserByLink(token);
+    if (!result.success) {
+      return res.status(400).json({ message: result.message });
     }
-};
+    res.status(200).json({ message: 'User Verified Successfully' });
+  };
 
 //login a user
 exports.loginUser = async (req, res) => {

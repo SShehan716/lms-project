@@ -13,3 +13,13 @@ exports.getUserByEmail = async (email) => {
         return { message: error.message };
     }
 }
+
+// get all users
+exports.getAllUsers = async () => {
+    try{
+        const users = await User.find().select('-password');
+        return users;
+    }catch(error){
+        return { message: error.message };
+    }
+}
