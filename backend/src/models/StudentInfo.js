@@ -10,7 +10,6 @@ const studentInfoSchema = new Schema({
     type: String,
     required: true,
   },
-  // Link to  User model, instead of using id_student as an integer
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',

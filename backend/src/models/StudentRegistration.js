@@ -15,7 +15,6 @@ const studentRegistrationSchema = new Schema({
     ref: 'User',
     required: true,
   },
-  // Usually stored as number of days relative to start; keep as int or convert to Date
   date_registration: {
     type: Date,
     required: false,

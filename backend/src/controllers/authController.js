@@ -11,18 +11,15 @@ exports.registerUser = async (req, res) => {
         role,
         code_module,
         code_presentation,
-        date_registration,
-        date_unregistration,
+        date_registration = new Date(),
         gender,
         imd_band,
         highest_education,
         age_band,
-        num_of_prev_attempts,
-        studied_credits,
         region,
         disability,
-        final_result,
       } = req.body;
+
       // Call the service function with request body
       await registerUser({
         name,
@@ -32,16 +29,12 @@ exports.registerUser = async (req, res) => {
         code_module,
         code_presentation,
         date_registration,
-        date_unregistration,
         gender,
         imd_band,
         highest_education,
         age_band,
-        num_of_prev_attempts,
-        studied_credits,
         region,
         disability,
-        final_result,
       });
   
       // On success, send a response with a "message" key.

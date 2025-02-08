@@ -49,7 +49,6 @@ exports.registerUser = async (data) => {
 
     // 2. If the user is a 'student', create StudentInfo and StudentRegistration docs
     if (newUser.role === 'student') {
-      // 2a. Create StudentInfo (demographics, etc.) if you have that data
       studentInfoDoc = new StudentInfo({
         code_module: data.code_module,
         code_presentation: data.code_presentation,
@@ -58,11 +57,8 @@ exports.registerUser = async (data) => {
         imd_band: data.imd_band,
         highest_education: data.highest_education,
         age_band: data.age_band,
-        num_of_prev_attempts: data.num_of_prev_attempts,
-        studied_credits: data.studied_credits,
         region: data.region,
         disability: data.disability,
-        final_result: data.final_result,
       });
       await studentInfoDoc.save();
 
@@ -72,7 +68,6 @@ exports.registerUser = async (data) => {
         code_presentation: data.code_presentation,
         user: newUser._id,
         date_registration: new Date(data.date_registration),
-        date_unregistration: new Date(data.date_unregistration),    
       });
       await studentRegDoc.save();
     }

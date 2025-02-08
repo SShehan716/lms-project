@@ -109,53 +109,55 @@ const Invite = ({ visible, onCancel, onInviteSuccess }) => {
             <Form.Item
               label="Code Module"
               name="code_module"
-              rules={[{ required: true, message: "Please enter code module!" }]}
+              rules={[{ required: true, message: "Please select a code module!" }]}
             >
-              <Input />
+              <Select placeholder="Select a code module">
+                <Select.Option value="AAA">AAA</Select.Option>
+                <Select.Option value="BBB">BBB</Select.Option>
+                <Select.Option value="CCC">CCC</Select.Option>
+                <Select.Option value="DDD">DDD</Select.Option>
+                <Select.Option value="EEE">EEE</Select.Option>
+                <Select.Option value="FFF">FFF</Select.Option>
+                <Select.Option value="GGG">GGG</Select.Option>
+              </Select>
             </Form.Item>
+
             <Form.Item
               label="Code Presentation"
               name="code_presentation"
-              rules={[{ required: true, message: "Please enter code presentation!" }]}
+              rules={[{ required: true, message: "Please select a code presentation!" }]}
             >
-              <Input />
+              <Select placeholder="Select a code presentation">
+                <Select.Option value="2013B">2013B</Select.Option>
+                <Select.Option value="2013J">2013J</Select.Option>
+                <Select.Option value="2014B">2014B</Select.Option>
+                <Select.Option value="2014J">2014J</Select.Option>
+              </Select>
             </Form.Item>
-            <Form.Item
-              label="Date Registration"
-              name="date_registration"
-              initialValue={moment()}
-              rules={[{ required: true, message: "Please select the registration date!" }]}
-            >
-              <DatePicker
-                format="YYYY-MM-DD"
-                onChange={(date) => {
-                  if (date) {
-                    form.setFieldsValue({
-                      date_unregistration: date.clone().add(270, "days"),
-                    });
-                  }
-                }}
-              />
-            </Form.Item>
-            <Form.Item
-              label="Date Unregistration"
-              name="date_unregistration"
-              initialValue={moment().add(270, "days")}
-              rules={[{ required: true, message: "Please select the unregistration date!" }]}
-            >
-              <DatePicker format="YYYY-MM-DD" />
-            </Form.Item>
+
             <Form.Item
               label="Gender"
               name="gender"
+              rules={[{ required: true, message: "Please select a gender!" }]}
             >
-              <Input />
+              <Select placeholder="Select a gender">
+                <Select.Option value="Male">Male</Select.Option>
+                <Select.Option value="Female">Female</Select.Option>
+              </Select>
             </Form.Item>
+
             <Form.Item
               label="IMD Band"
               name="imd_band"
+              rules={[{ required: true, message: "Please select an IMD band!" }]}
             >
-              <Input />
+              <Select placeholder="Select an IMD band">
+                <Select.Option value="0-10%">0-10%</Select.Option>
+                <Select.Option value="10-20%">10-20%</Select.Option>
+                <Select.Option value="20-30%">20-30%</Select.Option>
+                <Select.Option value="30-40%">30-40%</Select.Option>
+                <Select.Option value="40-50%">40-50%</Select.Option>
+              </Select>
             </Form.Item>
             <Form.Item
               label="Highest Education"
@@ -166,22 +168,13 @@ const Invite = ({ visible, onCancel, onInviteSuccess }) => {
             <Form.Item
               label="Age Band"
               name="age_band"
+              rules={[{ required: true, message: "Please select an age band!" }]}
             >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Number of Previous Attempts"
-              name="num_of_prev_attempts"
-              rules={[{ type: "number", transform: (value) => Number(value) }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Studied Credits"
-              name="studied_credits"
-              rules={[{ type: "number", transform: (value) => Number(value) }]}
-            >
-              <Input />
+              <Select placeholder="Select an age band">
+                <Select.Option value="0-35">0-35</Select.Option>
+                <Select.Option value="35-55">35-55</Select.Option>
+                <Select.Option value="55<=">55 or above</Select.Option>
+              </Select>
             </Form.Item>
             <Form.Item
               label="Region"
@@ -192,14 +185,12 @@ const Invite = ({ visible, onCancel, onInviteSuccess }) => {
             <Form.Item
               label="Disability"
               name="disability"
+              rules={[{ required: true, message: "Please select a disability status!" }]}
             >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="Final Result"
-              name="final_result"
-            >
-              <Input />
+              <Select placeholder="Select Disability">
+                <Select.Option value="Y">Yes</Select.Option>
+                <Select.Option value="N">No</Select.Option>
+              </Select>
             </Form.Item>
           </>
         )}
