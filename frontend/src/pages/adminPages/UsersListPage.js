@@ -37,10 +37,10 @@ const UserListPage = () => {
   // Here, you might re-fetch the users list from your API.
   // For this demo, we simply add a new dummy user.
   const handleInviteSuccess = () => {
-    const newUser = {
+    let newUser = {
       id: users.length + 1,
       name: "New User",
-      email: `newuser${users.length + 1}@example.com`,
+      email: `newUser${users.length + 1}@example.com`,
       role: "student",
     };
     if (newUser.role === "student") {
