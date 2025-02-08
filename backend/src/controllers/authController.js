@@ -3,8 +3,40 @@ const { registerUser, loginUser, verifyUserByLink, requestVerificationEmail} = r
 //register a new yser
 exports.registerUser = async (req, res) => {
     try {
+      console.log(req.body);
+      const {
+        name,
+        email,
+        password,
+        role,
+        code_module,
+        code_presentation,
+        date_registration = new Date(),
+        gender,
+        imd_band,
+        highest_education,
+        age_band,
+        region,
+        disability,
+      } = req.body;
+
       // Call the service function with request body
-      await registerUser(req.body);
+      await registerUser({
+        name,
+        email,
+        password,
+        role,
+        code_module,
+        code_presentation,
+        date_registration,
+        gender,
+        imd_band,
+        highest_education,
+        age_band,
+        region,
+        disability,
+      });
+  
       // On success, send a response with a "message" key.
       return res.status(201).json({ message: "User invited successfully" });
     } catch (error) {

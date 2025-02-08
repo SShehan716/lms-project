@@ -1,13 +1,16 @@
 // Invite.js
-import React, { useEffect } from "react";
-import { Modal, Form, Input, Button, Select, message } from "antd";
+import React, { useEffect, useState } from "react";
+import { Modal, Form, Input, Button, Select, message, DatePicker } from "antd";
 import { UserOutlined, MailOutlined } from "@ant-design/icons";
 import { register } from "../../services/authService";
+import moment from "moment";
+
 
 const { Option } = Select;
 
 const Invite = ({ visible, onCancel, onInviteSuccess }) => {
   const [form] = Form.useForm();
+  const [selectedRole, setSelectedRole] = useState(null);
 
   // Helper function to generate a random password.
   const generateRandomPassword = (length = 8) => {
@@ -94,12 +97,103 @@ const Invite = ({ visible, onCancel, onInviteSuccess }) => {
           name="role"
           rules={[{ required: true, message: "Please select a role!" }]}
         >
-          <Select placeholder="Select a role">
+          <Select placeholder="Select a role" onChange={(value) => setSelectedRole(value)}>
             <Option value="student">Student</Option>
             <Option value="teacher">Teacher</Option>
             <Option value="admin">Admin</Option>
           </Select>
         </Form.Item>
+
+        {selectedRole === "student" && (
+          <>
+            <Form.Item
+              label="Code Module"
+              name="code_module"
+              rules={[{ required: true, message: "Please select a code module!" }]}
+            >
+              <Select placeholder="Select a code module">
+                <Select.Option value="AAA">AAA</Select.Option>
+                <Select.Option value="BBB">BBB</Select.Option>
+                <Select.Option value="CCC">CCC</Select.Option>
+                <Select.Option value="DDD">DDD</Select.Option>
+                <Select.Option value="EEE">EEE</Select.Option>
+                <Select.Option value="FFF">FFF</Select.Option>
+                <Select.Option value="GGG">GGG</Select.Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="Code Presentation"
+              name="code_presentation"
+              rules={[{ required: true, message: "Please select a code presentation!" }]}
+            >
+              <Select placeholder="Select a code presentation">
+                <Select.Option value="2013B">2013B</Select.Option>
+                <Select.Option value="2013J">2013J</Select.Option>
+                <Select.Option value="2014B">2014B</Select.Option>
+                <Select.Option value="2014J">2014J</Select.Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="Gender"
+              name="gender"
+              rules={[{ required: true, message: "Please select a gender!" }]}
+            >
+              <Select placeholder="Select a gender">
+                <Select.Option value="Male">Male</Select.Option>
+                <Select.Option value="Female">Female</Select.Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="IMD Band"
+              name="imd_band"
+              rules={[{ required: true, message: "Please select an IMD band!" }]}
+            >
+              <Select placeholder="Select an IMD band">
+                <Select.Option value="0-10%">0-10%</Select.Option>
+                <Select.Option value="10-20%">10-20%</Select.Option>
+                <Select.Option value="20-30%">20-30%</Select.Option>
+                <Select.Option value="30-40%">30-40%</Select.Option>
+                <Select.Option value="40-50%">40-50%</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="Highest Education"
+              name="highest_education"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Age Band"
+              name="age_band"
+              rules={[{ required: true, message: "Please select an age band!" }]}
+            >
+              <Select placeholder="Select an age band">
+                <Select.Option value="0-35">0-35</Select.Option>
+                <Select.Option value="35-55">35-55</Select.Option>
+                <Select.Option value="55<=">55 or above</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="Region"
+              name="region"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Disability"
+              name="disability"
+              rules={[{ required: true, message: "Please select a disability status!" }]}
+            >
+              <Select placeholder="Select Disability">
+                <Select.Option value="Y">Yes</Select.Option>
+                <Select.Option value="N">No</Select.Option>
+              </Select>
+            </Form.Item>
+          </>
+        )}
         <Form.Item
           label="Password"
           name="password"

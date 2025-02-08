@@ -15,5 +15,15 @@ export const useUserService = () => {
     return response.data;
   }
 
-  return { getAllUsers };
+  const getUserByEmail = async (email) => {
+    const token = user.token;
+    const response = await api.get(`api/users/user/${email}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
+  }
+
+  return { getAllUsers, getUserByEmail };
 };

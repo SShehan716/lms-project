@@ -18,7 +18,6 @@ exports.getUserByEmail = async (req, res) => {
 //get all users
 exports.getAllUsers = async (req, res) => {
     try{
-        console.log('get all users');
         const users = await getAllUsers();
         res.status(200).json(users);
     }catch(error){

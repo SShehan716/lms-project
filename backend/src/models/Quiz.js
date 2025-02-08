@@ -16,11 +16,6 @@ const quizSchema = new Schema({
         ref: 'Course',
         required: true,
     },
-    lesson: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Lesson',
-        required: false,
-    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Quiz', quizSchema);
