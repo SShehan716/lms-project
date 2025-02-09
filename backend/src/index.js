@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 // Routes
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
+const predictionRoutes = require('./routes/predictionRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -20,6 +21,7 @@ connectDB();
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
+app.use("/api/predict", predictionRoutes);
 
 // Root Route
 app.get('/', (req, res) => {
