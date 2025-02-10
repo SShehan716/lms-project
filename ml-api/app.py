@@ -6,6 +6,11 @@ import pandas as pd
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR, filename='app_errors.log', 
+                    format='%(asctime)s %(levelname)s %(message)s')
 
 app = Flask(__name__)
 
@@ -76,7 +81,8 @@ def predict():
         })
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Exception occurred", exc_info=True)
+        return jsonify({"error": "An internal error has occurred!"}), 500
     
 if __name__ == '__main__':
     app.run(debug=False)
