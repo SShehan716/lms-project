@@ -9,6 +9,7 @@ import UserListPage from './pages/adminPages/UsersListPage';
 import AssessmentSubmission from './pages/assessmentSubmissionPages/AssessmentSubmission';
 import QuizPage from './pages/quizPage/QuizPage';
 import TeacherGrading from './pages/TeacherGradingPages/TeacherGrading';
+import StudentDashboardPage from './pages/dashboardPages/StudentDashboard';
 
 import Header from './components/common/AppHeader';
 import Footer from './components/common/Footer';
@@ -27,6 +28,7 @@ const App = () => {
                 <Route path="/assessment-submission" element={<AssessmentSubmission />} />
                 <Route path="/quiz" element={<QuizPage />} />
                 <Route path="/teacher-grading" element={<TeacherGrading />} />
+                <Route path="/student-dashboard" element={<StudentDashboardPage />} />
           </Routes>
           <Footer />
         </Router>
