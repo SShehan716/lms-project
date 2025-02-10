@@ -6,6 +6,7 @@ import InvitePage from './pages/InvitePage';
 import Profile from './pages/profile/ProfilePage';
 import VerifyUserPage from './pages/authPages/VerifyUserPage';
 import UserListPage from './pages/adminPages/UsersListPage';
+import AssessmentSubmission from './pages/assessmentSubmissionPages/AssessmentSubmission';
 
 import Header from './components/common/AppHeader';
 import Footer from './components/common/Footer';
@@ -21,6 +22,7 @@ const App = () => {
                 <Route path="/invite-user" element={<InvitePage />} />
                 <Route path="/verify/:token" element={<VerifyUserPage />} />
                 <Route path="/user-list" element={<UserListPage />} />
+                <Route path="/assessment-submission" element={<AssessmentSubmission />} />
           </Routes>
           <Footer />
         </Router>
