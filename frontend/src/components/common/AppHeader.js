@@ -32,14 +32,14 @@ const AppHeader = () => {
             {/* Left Side: Logo and Navigation Links */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Title level={3} style={{ color: 'white', margin: 0, marginRight: '24px' }}>
-                    LMS
+                    GradeGenius
                 </Title>
                 <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['1']} style={{ flex: 1, minWidth: 0 }}>
                     <Menu.Item key="1">
                         <Link to="/">Home</Link>
                     </Menu.Item>
                     <Menu.Item key="2">
-                        <Link to="/profile">Profile</Link>
+                        <Link to="/student-dashboard">Dashboard</Link>
                     </Menu.Item>
                 </Menu>
             </div>
